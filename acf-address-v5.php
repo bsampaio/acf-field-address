@@ -149,7 +149,11 @@ class acf_field_address extends acf_field {
 
 		<div class="acf-address-field"
 		     data-name="<?php echo $field['name']; ?>"
-		     data-value="<?php echo esc_js( json_encode( $field['value'] ) ); ?>"
+                     <?php
+                        $jsonValue = $this->jsonEncode( $field['value'] );
+                        $escValue = esc_js( $jsonValue );
+                     ?>
+		     data-value="<?php echo $escValue ?>"
 		     data-output-type="<?php echo $field['output_type']; ?>"
 		     data-layout="<?php echo esc_js( $address_layout ); ?>"
 		     data-options="<?php echo esc_js( $address_options ); ?>"

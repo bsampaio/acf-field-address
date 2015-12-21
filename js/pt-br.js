@@ -42,7 +42,7 @@ jQuery(document).ready(function ($){
 
 	function init(elements, postmon) {
 		elements.forEach(function(element, index, all) {
-			if(!element.visible) {
+			if(!element.visible && ($(element.selector).val() === "")) {
 				var jElement = $(element.selector);
 				jElement.prop("disabled", true);
 			}
