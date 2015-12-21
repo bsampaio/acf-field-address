@@ -2,6 +2,7 @@
 
 class acf_field_address extends acf_field {
 
+
 	public function __construct() {
 
 		$this->name = 'address';
@@ -18,8 +19,8 @@ class acf_field_address extends acf_field {
 		*/
 		$this->defaults = array(
 			'output_type'     => 'html',
-			'address_layout'  => '[[{"id":"street1","label":"Street 1"}],[{"id":"street2","label":"Street 2"}],[{"id":"street3","label":"Street 3"}],[{"id":"city","label":"City"},{"id":"state","label":"State"},{"id":"zip","label":"Postal Code"},{"id":"country","label":"Country"}],[]]',
-			'address_options' => '{"street1":{"id":"street1","label":"Street 1","defaultValue":"","enabled":true,"cssClass":"street1","separator":""},"street2":{"id":"street2","label":"Street 2","defaultValue":"","enabled":true,"cssClass":"street2","separator":""},"street3":{"id":"street3","label":"Street 3","defaultValue":"","enabled":true,"cssClass":"street3","separator":""},"city":{"id":"city","label":"City","defaultValue":"","enabled":true,"cssClass":"city","separator":","},"state":{"id":"state","label":"State","defaultValue":"","enabled":true,"cssClass":"state","separator":""},"zip":{"id":"zip","label":"Postal Code","defaultValue":"","enabled":true,"cssClass":"zip","separator":""},"country":{"id":"country","label":"Country","defaultValue":"","enabled":true,"cssClass":"country","separator":""}}'
+			'address_layout'  => '[[{"id":"cep","label":"CEP"}],[{"id":"logradouro","label":"Logradouro"}],[{"id":"bairro","label":"Bairro"}],[{"id":"cidade","label":"Cidade"},{"id":"estado","label":"Estado"},{"id":"zip","label":"Postal Code"},{"id":"country","label":"Country"}],[]]',
+			'address_options' => '{"cep":{"id":"cep","label":"CEP","defaultValue":"","enabled":true,"cssClass":"cep","separator":""},"logradouro":{"id":"logradouro","label":"Logradouro","defaultValue":"","enabled":true,"cssClass":"logradouro","separator":""},"bairro":{"id":"bairro","label":"Bairro","defaultValue":"","enabled":true,"cssClass":"bairro","separator":""},"cidade":{"id":"cidade","label":"Cidade","defaultValue":"","enabled":true,"cssClass":"cidade","separator":","},"estado":{"id":"estado","label":"Estado","defaultValue":"","enabled":true,"cssClass":"estado","separator":""},"zip":{"id":"zip","label":"Postal Code","defaultValue":"","enabled":true,"cssClass":"zip","separator":""},"country":{"id":"country","label":"Country","defaultValue":"","enabled":true,"cssClass":"country","separator":""}}'
 		);
 
 		/*
@@ -32,6 +33,7 @@ class acf_field_address extends acf_field {
 
 		parent::__construct();
 	}
+
 
 	/**
 	 *  Create extra settings for your field. These are visible when editing a field
@@ -108,6 +110,7 @@ class acf_field_address extends acf_field {
 
 	}
 
+
 	/**
 	 *  render_field()
 	 *
@@ -124,6 +127,9 @@ class acf_field_address extends acf_field {
 	 * @return    n/a
 	 */
 	function render_field( $field ) {
+
+//		var_dump($field);
+//		die;
 
 		// Work around for the ACF export to code option adding extra slashes and quotes
 		$address_options = stripcslashes( $field['address_options'] );
@@ -152,6 +158,7 @@ class acf_field_address extends acf_field {
 	<?php
 	}
 
+
 	/**
 	 *  input_admin_enqueue_scripts()
 	 *
@@ -168,21 +175,25 @@ class acf_field_address extends acf_field {
 	 */
 	function input_admin_enqueue_scripts() {
 
-    $dir = plugin_dir_url( __FILE__ );
+		$dir = plugin_dir_url( __FILE__ );
 
-    if(defined('SCRIPT_DEBUG') && SCRIPT_DEBUG === true) {
-      wp_register_script( 'acf-address-render-field', "{$dir}js/render_field.js" );
-    } else {
-      wp_register_script( 'acf-address-render-field', "{$dir}js/min/render_field-min.js" );
-    }
+		// register & include JS
+//		wp_register_script( 'acf-address-render-field', "{$dir}js/render_field.js" );
+		wp_register_script( 'acf-address-render-field', "{$dir}js/min/render_field-min.js" );
+		wp_enqueue_script( 'acf-address-render-field' );
 
-    wp_enqueue_script( 'acf-address-render-field' );
+		// Adicionando o script personalizado para PT-BR
+		wp_register_script( 'acf-address-pt-br', "{$dir}js/pt-br.js" );
+		wp_enqueue_script( 'acf-address-pt-br' );
+
+
 
 		// register & include CSS
 		wp_register_style( 'acf-input-address', "{$dir}css/render_field.css" );
 		wp_enqueue_style( 'acf-input-address' );
 
 	}
+
 
 	/**
 	 *  field_group_admin_enqueue_scripts()
@@ -202,16 +213,16 @@ class acf_field_address extends acf_field {
 
 		$dir = plugin_dir_url( __FILE__ );
 
-    if(defined('SCRIPT_DEBUG') && SCRIPT_DEBUG === true) {
-      wp_register_script( 'address.jquery.js', "{$dir}js/address.jquery.js" );
-      wp_register_script( 'render_field_options', "{$dir}js/render_field_options.js" );
-    } else {
-      wp_register_script( 'address.jquery.js', "{$dir}js/min/address.jquery-min.js" );
-      wp_register_script( 'render_field_options', "{$dir}js/min/render_field_options-min.js" );
-    }
-
+		// Ensure that jquery ui sortable is enqueued
 		wp_enqueue_script( 'jquery-ui-sortable' );
+
+		// register & include JS
+//		wp_register_script( 'address.jquery.js', "{$dir}js/address.jquery.js" );
+		wp_register_script( 'address.jquery.js', "{$dir}js/min/address.jquery-min.js" );
 		wp_enqueue_script( 'address.jquery.js' );
+
+//		wp_register_script( 'render_field_options', "{$dir}js/render_field_options.js" );
+		wp_register_script( 'render_field_options', "{$dir}js/min/render_field_options-min.js" );
 		wp_enqueue_script( 'render_field_options' );
 
 		// register & include CSS
@@ -219,6 +230,7 @@ class acf_field_address extends acf_field {
 		wp_enqueue_style( 'render_field_options' );
 
 	}
+
 
 	/**
 	 *  load_field()
@@ -235,8 +247,11 @@ class acf_field_address extends acf_field {
 	 */
 	public function load_field( $field ) {
 
+//		var_dump($field);
+//		die;
 		// detect old fields
 		if ( array_key_exists( 'address_components', $field ) ) {
+
 			$field['address_layout']  = $this->transform_layout( $field['address_layout'] );
 			$field['address_options'] = $this->transform_options( $field['address_components'] );
 			unset( $field['address_components'] );
@@ -253,36 +268,28 @@ class acf_field_address extends acf_field {
 
 	}
 
-  /**
-   * @param $val
-   * @return mixed|string|void
-   */
 	private function jsonEncode($val) {
 		return defined('JSON_UNESCAPED_UNICODE') ? json_encode($val, JSON_UNESCAPED_UNICODE) : json_encode($val);
 	}
 
-  /**
-   * @param $old_layout
-   * @return array
-   */
 	private function transform_layout( $old_layout ) {
 
 		$map = array(
-			'address1'    => 'street1',
-			'address2'    => 'street2',
-			'address3'    => 'street3',
-			'city'        => 'city',
-			'state'       => 'state',
+			'address1'    => 'cep',
+			'address2'    => 'logradouro',
+			'address3'    => 'bairro',
+			'cidade'        => 'cidade',
+			'estado'       => 'estado',
 			'postal_code' => 'zip',
 			'country'     => 'country',
 		);
 
 		$labelMap = array(
-			'street1' => 'Street 1',
-			'street2' => 'Street 2',
-			'street3' => 'Street 3',
-			'city'    => 'City',
-			'state'   => 'State',
+			'cep' => 'CEP',
+			'logradouro' => 'Logradouro',
+			'bairro' => 'Bairro',
+			'cidade'    => 'Cidade',
+			'estado'   => 'Estado',
 			'zip'     => 'Postal Code',
 			'country' => 'Country',
 		);
@@ -315,52 +322,49 @@ class acf_field_address extends acf_field {
 
 	}
 
-  /**
-   * @param $old_options
-   * @return array|mixed|object
-   */
+
 	private function transform_options( $old_options ) {
 
 		$map = array(
-			'street1' => array(
-				'id'           => 'street1',
-				'label'        => $old_options['address1']['label'] ?: '',
-				'defaultValue' => $old_options['address1']['default_value'] ?: '',
-				'enabled'      => $old_options['address1']['enabled'] ? true : false,
-				'cssClass'     => $old_options['address1']['class'] ?: '',
-				'separator'    => $old_options['address1']['separator'] ?: '',
+			'cep' => array(
+				'id'           => 'cep',
+				'label'        => $old_options['cep']['label'] ?: '',
+				'defaultValue' => $old_options['cep']['default_value'] ?: '',
+				'enabled'      => $old_options['cep']['enabled'] ? true : false,
+				'cssClass'     => $old_options['cep']['class'] ?: '',
+				'separator'    => $old_options['cep']['separator'] ?: '',
 			),
-			'street2' => array(
-				'id'           => 'street2',
-				'label'        => $old_options['address2']['label'] ?: '',
-				'defaultValue' => $old_options['address2']['default_value'] ?: '',
-				'enabled'      => $old_options['address2']['enabled'] ? true : false,
-				'cssClass'     => $old_options['address2']['class'] ?: '',
-				'separator'    => $old_options['address2']['separator'] ?: '',
+			'logradouro' => array(
+				'id'           => 'logradouro',
+				'label'        => $old_options['logradouro']['label'] ?: '',
+				'defaultValue' => $old_options['logradouro']['default_value'] ?: '',
+				'enabled'      => $old_options['logradouro']['enabled'] ? true : false,
+				'cssClass'     => $old_options['logradouro']['class'] ?: '',
+				'separator'    => $old_options['logradouro']['separator'] ?: '',
 			),
-			'street3' => array(
-				'id'           => 'street3',
-				'label'        => $old_options['address3']['label'] ?: '',
-				'defaultValue' => $old_options['address3']['default_value'] ?: '',
-				'enabled'      => $old_options['address3']['enabled'] ? true : false,
-				'cssClass'     => $old_options['address3']['class'] ?: '',
-				'separator'    => $old_options['address3']['separator'] ?: '',
+			'bairro' => array(
+				'id'           => 'bairro',
+				'label'        => $old_options['bairro']['label'] ?: '',
+				'defaultValue' => $old_options['bairro']['default_value'] ?: '',
+				'enabled'      => $old_options['bairro']['enabled'] ? true : false,
+				'cssClass'     => $old_options['bairro']['class'] ?: '',
+				'separator'    => $old_options['bairro']['separator'] ?: '',
 			),
-			'city'    => array(
-				'id'           => 'city',
-				'label'        => $old_options['city']['label'] ?: '',
-				'defaultValue' => $old_options['city']['default_value'] ?: '',
-				'enabled'      => $old_options['city']['enabled'] ? true : false,
-				'cssClass'     => $old_options['city']['class'] ?: '',
-				'separator'    => $old_options['city']['separator'] ?: '',
+			'cidade'    => array(
+				'id'           => 'cidade',
+				'label'        => $old_options['cidade']['label'] ?: '',
+				'defaultValue' => $old_options['cidade']['default_value'] ?: '',
+				'enabled'      => $old_options['cidade']['enabled'] ? true : false,
+				'cssClass'     => $old_options['cidade']['class'] ?: '',
+				'separator'    => $old_options['cidade']['separator'] ?: '',
 			),
-			'state'   => array(
-				'id'           => 'state',
-				'label'        => $old_options['state']['label'] ?: '',
-				'defaultValue' => $old_options['state']['default_value'] ?: '',
-				'enabled'      => $old_options['state']['enabled'] ? true : false,
-				'cssClass'     => $old_options['state']['class'] ?: '',
-				'separator'    => $old_options['state']['separator'] ?: '',
+			'estado'   => array(
+				'id'           => 'estado',
+				'label'        => $old_options['estado']['label'] ?: '',
+				'defaultValue' => $old_options['estado']['default_value'] ?: '',
+				'enabled'      => $old_options['estado']['enabled'] ? true : false,
+				'cssClass'     => $old_options['estado']['class'] ?: '',
+				'separator'    => $old_options['estado']['separator'] ?: '',
 			),
 			'zip'     => array(
 				'id'           => 'zip',
@@ -383,6 +387,7 @@ class acf_field_address extends acf_field {
 		return json_decode( json_encode( $map ) );
 
 	}
+
 
 	/**
 	 *  update_field()
@@ -411,6 +416,7 @@ class acf_field_address extends acf_field {
 		return $field;
 
 	}
+
 
 	/**
 	 *  format_value()
@@ -501,6 +507,7 @@ class acf_field_address extends acf_field {
 		return $html;
 	}
 
+
 	/**
 	 * @param $value
 	 *
@@ -510,6 +517,7 @@ class acf_field_address extends acf_field {
 		return json_decode( json_encode( $value ) );
 	}
 
+
 	/**
 	 * @param $value
 	 *
@@ -518,6 +526,7 @@ class acf_field_address extends acf_field {
 	private function valueToArray( $value ) {
 		return $value;
 	}
+
 
 	/*
 *  validate_value()
@@ -564,7 +573,9 @@ class acf_field_address extends acf_field {
 	//
 	//	}
 
+
 }
+
 
 // create field
 new acf_field_address();
